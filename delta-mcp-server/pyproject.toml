@@ -1,0 +1,16 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "delta-exchange-mcp-server"
+version = "1.0.0"
+description = "MCP server for Delta Exchange trading"
+dependencies = [
+    "delta-rest-client>=1.0.12",
+    "mcp>=0.2.0",
+    "python-dotenv>=1.0.0"
+]
+
+[project.scripts]
+delta-exchange-server = "server:main"

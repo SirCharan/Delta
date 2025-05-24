@@ -1,0 +1,196 @@
+2025-05-24 14:49:29,856 - INFO - === Delta Exchange API Test Started ===
+2025-05-24 14:49:29,856 - INFO - API Key: itKUkvFVzP...P16g3
+2025-05-24 14:49:29,856 - INFO - API Secret: pyVo8mOMxt...JrO1e
+2025-05-24 14:49:29,860 - DEBUG - Starting new HTTPS connection (1): api.delta.exchange:443
+2025-05-24 14:49:30,662 - DEBUG - https://api.delta.exchange:443 "GET /v2/products HTTP/1.1" 200 None
+2025-05-24 14:49:31,579 - DEBUG - Starting new HTTPS connection (1): api.delta.exchange:443
+2025-05-24 14:49:32,089 - DEBUG - https://api.delta.exchange:443 "GET /v2/tickers/BTCUSDT HTTP/1.1" 200 None
+2025-05-24 14:49:32,091 - INFO - === WALLET BALANCES TEST ===
+2025-05-24 14:49:32,091 - INFO - Attempting to fetch wallet balances...
+2025-05-24 14:49:32,091 - INFO - Making GET request to: https://api.delta.exchange/v2/wallet/balances
+2025-05-24 14:49:32,091 - DEBUG - Signature generation:
+2025-05-24 14:49:32,091 - DEBUG -   Method: GET
+2025-05-24 14:49:32,091 - DEBUG -   Endpoint: /v2/wallet/balances
+2025-05-24 14:49:32,091 - DEBUG -   Query String: 
+2025-05-24 14:49:32,091 - DEBUG -   Payload: 
+2025-05-24 14:49:32,092 - DEBUG -   Timestamp: 1748078372
+2025-05-24 14:49:32,092 - DEBUG -   Signature data: GET1748078372/v2/wallet/balances
+2025-05-24 14:49:32,092 - DEBUG -   Generated signature: b27d6409ad825dd6c2229f43c0f100309a82f0c9d2e7d2e3f3180c6f7119c864
+2025-05-24 14:49:32,092 - DEBUG - Request headers: {'api-key': 'itKUkvFVzPpGiq76cBuirH7iRP16g3', 'signature': 'b27d6409ad825dd6c2229f43c0f100309a82f0c9d2e7d2e3f3180c6f7119c864', 'timestamp': '1748078372', 'Content-Type': 'application/json', 'User-Agent': 'python-3.10'}
+2025-05-24 14:49:32,093 - DEBUG - Starting new HTTPS connection (1): api.delta.exchange:443
+2025-05-24 14:49:32,290 - DEBUG - https://api.delta.exchange:443 "GET /v2/wallet/balances HTTP/1.1" 401 52
+2025-05-24 14:49:32,291 - INFO - Response status: 401
+2025-05-24 14:49:32,291 - DEBUG - Response headers: {'Content-Type': 'application/json; charset=utf-8', 'Content-Length': '52', 'Connection': 'keep-alive', 'Date': 'Sat, 24 May 2025 09:19:32 GMT', 'Cache-Control': 'max-age=0, private, must-revalidate', 'request-in-time': '1748078372245320', 'request-out-time': '1748078372246004', 'Server': 'Cowboy', 'X-Cache': 'Error from cloudfront', 'Via': '1.1 eacc4bc352ad91f6c2b8728046877502.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'BLR50-P4', 'X-Amz-Cf-Id': 'gz3HDckr6BbyteCN4RWMr_6acpb6bXJj0S9xLATxfJifGA2h_cO8cw==', 'Vary': 'Origin'}
+2025-05-24 14:49:32,291 - DEBUG - Response content: {"error":{"code":"invalid_api_key"},"success":false}
+2025-05-24 14:49:32,291 - ERROR - Request failed with status 401
+2025-05-24 14:49:32,292 - ERROR - Error response: {"error":{"code":"invalid_api_key"},"success":false}
+2025-05-24 14:49:32,292 - ERROR - Error details: {'code': 'invalid_api_key'}
+2025-05-24 14:49:32,292 - ERROR - Wallet balances test failed
+2025-05-24 14:49:32,292 - INFO - === POSITIONS TEST ===
+2025-05-24 14:49:32,293 - INFO - Attempting to fetch positions...
+2025-05-24 14:49:32,293 - INFO - Making GET request to: https://api.delta.exchange/v2/positions
+2025-05-24 14:49:32,293 - DEBUG - Signature generation:
+2025-05-24 14:49:32,293 - DEBUG -   Method: GET
+2025-05-24 14:49:32,293 - DEBUG -   Endpoint: /v2/positions
+2025-05-24 14:49:32,293 - DEBUG -   Query String: 
+2025-05-24 14:49:32,293 - DEBUG -   Payload: 
+2025-05-24 14:49:32,293 - DEBUG -   Timestamp: 1748078372
+2025-05-24 14:49:32,293 - DEBUG -   Signature data: GET1748078372/v2/positions
+2025-05-24 14:49:32,293 - DEBUG -   Generated signature: bcca845bfb2002f20eb0894435e6be551539be3c96bc8926074ab60fd1369321
+2025-05-24 14:49:32,293 - DEBUG - Request headers: {'api-key': 'itKUkvFVzPpGiq76cBuirH7iRP16g3', 'signature': 'bcca845bfb2002f20eb0894435e6be551539be3c96bc8926074ab60fd1369321', 'timestamp': '1748078372', 'Content-Type': 'application/json', 'User-Agent': 'python-3.10'}
+2025-05-24 14:49:32,295 - DEBUG - Starting new HTTPS connection (1): api.delta.exchange:443
+2025-05-24 14:49:32,489 - DEBUG - https://api.delta.exchange:443 "GET /v2/positions HTTP/1.1" 401 52
+2025-05-24 14:49:32,490 - INFO - Response status: 401
+2025-05-24 14:49:32,490 - DEBUG - Response headers: {'Content-Type': 'application/json; charset=utf-8', 'Content-Length': '52', 'Connection': 'keep-alive', 'Date': 'Sat, 24 May 2025 09:19:32 GMT', 'Cache-Control': 'max-age=0, private, must-revalidate', 'request-in-time': '1748078372444644', 'request-out-time': '1748078372445405', 'Server': 'Cowboy', 'X-Cache': 'Error from cloudfront', 'Via': '1.1 2fdab31714a9ba8fc39c70a3c382663c.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'BLR50-P4', 'X-Amz-Cf-Id': 'NvVnoTR_UtS8HUhNjhGEKz8ljq94ylr-oxTHTW1xkAQ6Uv64jam-4g==', 'Vary': 'Origin'}
+2025-05-24 14:49:32,490 - DEBUG - Response content: {"error":{"code":"invalid_api_key"},"success":false}
+2025-05-24 14:49:32,491 - ERROR - Request failed with status 401
+2025-05-24 14:49:32,491 - ERROR - Error response: {"error":{"code":"invalid_api_key"},"success":false}
+2025-05-24 14:49:32,491 - ERROR - Error details: {'code': 'invalid_api_key'}
+2025-05-24 14:49:32,491 - ERROR - Positions test failed
+2025-05-24 14:49:32,492 - INFO - === ORDERS TEST ===
+2025-05-24 14:49:32,492 - INFO - Attempting to fetch orders with state: all...
+2025-05-24 14:49:32,492 - INFO - Making GET request to: https://api.delta.exchange/v2/orders
+2025-05-24 14:49:32,492 - DEBUG - Signature generation:
+2025-05-24 14:49:32,492 - DEBUG -   Method: GET
+2025-05-24 14:49:32,492 - DEBUG -   Endpoint: /v2/orders
+2025-05-24 14:49:32,492 - DEBUG -   Query String: 
+2025-05-24 14:49:32,492 - DEBUG -   Payload: 
+2025-05-24 14:49:32,492 - DEBUG -   Timestamp: 1748078372
+2025-05-24 14:49:32,492 - DEBUG -   Signature data: GET1748078372/v2/orders
+2025-05-24 14:49:32,492 - DEBUG -   Generated signature: 98b9db57e3158b73c543275b19556a7bbb110747b2c7a38a42aaaf15d2ca7a36
+2025-05-24 14:49:32,492 - DEBUG - Request headers: {'api-key': 'itKUkvFVzPpGiq76cBuirH7iRP16g3', 'signature': '98b9db57e3158b73c543275b19556a7bbb110747b2c7a38a42aaaf15d2ca7a36', 'timestamp': '1748078372', 'Content-Type': 'application/json', 'User-Agent': 'python-3.10'}
+2025-05-24 14:49:32,494 - DEBUG - Starting new HTTPS connection (1): api.delta.exchange:443
+2025-05-24 14:49:32,986 - DEBUG - https://api.delta.exchange:443 "GET /v2/orders HTTP/1.1" 401 52
+2025-05-24 14:49:32,987 - INFO - Response status: 401
+2025-05-24 14:49:32,988 - DEBUG - Response headers: {'Content-Type': 'application/json; charset=utf-8', 'Content-Length': '52', 'Connection': 'keep-alive', 'Date': 'Sat, 24 May 2025 09:19:32 GMT', 'Cache-Control': 'max-age=0, private, must-revalidate', 'request-in-time': '1748078372940274', 'request-out-time': '1748078372941204', 'Server': 'Cowboy', 'X-Cache': 'Error from cloudfront', 'Via': '1.1 7f91d3358cb8b5b50ea653cbde2d162c.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'BLR50-P4', 'X-Amz-Cf-Id': '34b2jTMVLBXvRYYE1MvWkqThlBg-P9HFo3n5n3DhkyIi2Bj1VGQ91A==', 'Vary': 'Origin'}
+2025-05-24 14:49:32,988 - DEBUG - Response content: {"error":{"code":"invalid_api_key"},"success":false}
+2025-05-24 14:49:32,988 - ERROR - Request failed with status 401
+2025-05-24 14:49:32,988 - ERROR - Error response: {"error":{"code":"invalid_api_key"},"success":false}
+2025-05-24 14:49:32,988 - ERROR - Error details: {'code': 'invalid_api_key'}
+2025-05-24 14:49:32,989 - ERROR - Orders test failed
+2025-05-24 14:49:32,989 - INFO - === ORDER PLACEMENT TEST ===
+2025-05-24 14:49:32,989 - INFO - Attempting to place order:
+2025-05-24 14:49:32,989 - INFO -   Product ID: 139
+2025-05-24 14:49:32,989 - INFO -   Side: buy
+2025-05-24 14:49:32,989 - INFO -   Size: 1
+2025-05-24 14:49:32,989 - INFO -   Price: 54133.0
+2025-05-24 14:49:32,989 - DEBUG - POST/PUT request with data: {'product_id': 139, 'side': 'buy', 'size': '1', 'order_type': 'limit', 'time_in_force': 'gtc', 'limit_price': '54133.0'}
+2025-05-24 14:49:32,989 - INFO - Making POST request to: https://api.delta.exchange/v2/orders
+2025-05-24 14:49:32,989 - DEBUG - Signature generation:
+2025-05-24 14:49:32,989 - DEBUG -   Method: POST
+2025-05-24 14:49:32,989 - DEBUG -   Endpoint: /v2/orders
+2025-05-24 14:49:32,989 - DEBUG -   Query String: 
+2025-05-24 14:49:32,989 - DEBUG -   Payload: {"product_id":139,"side":"buy","size":"1","order_type":"limit","time_in_force":"gtc","limit_price":"54133.0"}
+2025-05-24 14:49:32,989 - DEBUG -   Timestamp: 1748078372
+2025-05-24 14:49:32,989 - DEBUG -   Signature data: POST1748078372/v2/orders{"product_id":139,"side":"buy","size":"1","order_type":"limit","time_in_force":"gtc","limit_price":"54133.0"}
+2025-05-24 14:49:32,989 - DEBUG -   Generated signature: 006c8c20d1626a75fb0ffcf0b12562cfc6231e3edbc932e74253de2a2c61e68d
+2025-05-24 14:49:32,990 - DEBUG - Request headers: {'api-key': 'itKUkvFVzPpGiq76cBuirH7iRP16g3', 'signature': '006c8c20d1626a75fb0ffcf0b12562cfc6231e3edbc932e74253de2a2c61e68d', 'timestamp': '1748078372', 'Content-Type': 'application/json', 'User-Agent': 'python-3.10'}
+2025-05-24 14:49:32,991 - DEBUG - Starting new HTTPS connection (1): api.delta.exchange:443
+2025-05-24 14:49:33,409 - DEBUG - https://api.delta.exchange:443 "POST /v2/orders HTTP/1.1" 401 52
+2025-05-24 14:49:33,410 - INFO - Response status: 401
+2025-05-24 14:49:33,410 - DEBUG - Response headers: {'Content-Type': 'application/json; charset=utf-8', 'Content-Length': '52', 'Connection': 'keep-alive', 'Date': 'Sat, 24 May 2025 09:19:33 GMT', 'server': 'Cowboy', 'cache-control': 'max-age=0, private, must-revalidate', 'request-in-time': '1748078373387720', 'request-out-time': '1748078373388486', 'X-Cache': 'Error from cloudfront', 'Via': '1.1 b05256e5803ee48f876b62991082abe4.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'BLR50-P4', 'X-Amz-Cf-Id': 'MTuNKjHpImbYWR8PjBv8HNRQ9EwBicGhEvrK_2hovuLD95dOtMEAQQ==', 'Vary': 'Origin'}
+2025-05-24 14:49:33,410 - DEBUG - Response content: {"error":{"code":"invalid_api_key"},"success":false}
+2025-05-24 14:49:33,411 - ERROR - Request failed with status 401
+2025-05-24 14:49:33,411 - ERROR - Error response: {"error":{"code":"invalid_api_key"},"success":false}
+2025-05-24 14:49:33,411 - ERROR - Error details: {'code': 'invalid_api_key'}
+2025-05-24 14:49:33,411 - ERROR - Order placement failed
+2025-05-24 14:49:33,412 - ERROR - No response received for order placement
+2025-05-24 14:49:33,412 - INFO - === API Test Completed ===
+2025-05-24 14:52:57,583 - INFO - === Delta Exchange API Test Started ===
+2025-05-24 14:52:57,583 - INFO - API Key: itKUkvFVzP...P16g3
+2025-05-24 14:52:57,583 - INFO - API Secret: pyVo8mOMxt...JrO1e
+2025-05-24 14:52:57,586 - DEBUG - Starting new HTTPS connection (1): api.delta.exchange:443
+2025-05-24 14:52:58,704 - DEBUG - https://api.delta.exchange:443 "GET /v2/products HTTP/1.1" 200 None
+2025-05-24 14:52:59,630 - DEBUG - Starting new HTTPS connection (1): api.delta.exchange:443
+2025-05-24 14:53:00,123 - DEBUG - https://api.delta.exchange:443 "GET /v2/tickers/BTCUSDT HTTP/1.1" 200 None
+2025-05-24 14:53:00,125 - INFO - === WALLET BALANCES TEST ===
+2025-05-24 14:53:00,126 - INFO - Attempting to fetch wallet balances...
+2025-05-24 14:53:00,126 - INFO - Making GET request to: https://api.delta.exchange/v2/wallet/balances
+2025-05-24 14:53:00,126 - DEBUG - Signature generation:
+2025-05-24 14:53:00,126 - DEBUG -   Method: GET
+2025-05-24 14:53:00,126 - DEBUG -   Endpoint: /v2/wallet/balances
+2025-05-24 14:53:00,126 - DEBUG -   Query String: 
+2025-05-24 14:53:00,126 - DEBUG -   Payload: 
+2025-05-24 14:53:00,126 - DEBUG -   Timestamp: 1748078580
+2025-05-24 14:53:00,126 - DEBUG -   Signature data: GET1748078580/v2/wallet/balances
+2025-05-24 14:53:00,126 - DEBUG -   Generated signature: 8a9d6d7a5c1c53113f90b47df212181d3e73f0eab410b075dc9dc354863afb46
+2025-05-24 14:53:00,126 - DEBUG - Request headers: {'api-key': 'itKUkvFVzPpGiq76cBuirH7iRP16g3', 'signature': '8a9d6d7a5c1c53113f90b47df212181d3e73f0eab410b075dc9dc354863afb46', 'timestamp': '1748078580', 'Content-Type': 'application/json', 'User-Agent': 'python-3.10'}
+2025-05-24 14:53:00,128 - DEBUG - Starting new HTTPS connection (1): api.delta.exchange:443
+2025-05-24 14:53:00,623 - DEBUG - https://api.delta.exchange:443 "GET /v2/wallet/balances HTTP/1.1" 401 52
+2025-05-24 14:53:00,624 - INFO - Response status: 401
+2025-05-24 14:53:00,624 - DEBUG - Response headers: {'Content-Type': 'application/json; charset=utf-8', 'Content-Length': '52', 'Connection': 'keep-alive', 'Date': 'Sat, 24 May 2025 09:23:00 GMT', 'Cache-Control': 'max-age=0, private, must-revalidate', 'request-in-time': '1748078580557487', 'request-out-time': '1748078580558440', 'Server': 'Cowboy', 'X-Cache': 'Error from cloudfront', 'Via': '1.1 3e01f1bb97e94babf3a238feeedd6966.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'BLR50-P4', 'X-Amz-Cf-Id': 'W7LHBrEVT9Qnu_G3Cdurd9CxclhsTrhUrf62BjWfnaE5uNgzZ_QMRg==', 'Vary': 'Origin'}
+2025-05-24 14:53:00,625 - DEBUG - Response content: {"error":{"code":"invalid_api_key"},"success":false}
+2025-05-24 14:53:00,625 - ERROR - Request failed with status 401
+2025-05-24 14:53:00,625 - ERROR - Error response: {"error":{"code":"invalid_api_key"},"success":false}
+2025-05-24 14:53:00,625 - ERROR - Error details: {'code': 'invalid_api_key'}
+2025-05-24 14:53:00,626 - ERROR - Wallet balances test failed
+2025-05-24 14:53:00,626 - INFO - === POSITIONS TEST ===
+2025-05-24 14:53:00,626 - INFO - Attempting to fetch positions...
+2025-05-24 14:53:00,626 - INFO - Making GET request to: https://api.delta.exchange/v2/positions
+2025-05-24 14:53:00,626 - DEBUG - Signature generation:
+2025-05-24 14:53:00,626 - DEBUG -   Method: GET
+2025-05-24 14:53:00,626 - DEBUG -   Endpoint: /v2/positions
+2025-05-24 14:53:00,626 - DEBUG -   Query String: 
+2025-05-24 14:53:00,626 - DEBUG -   Payload: 
+2025-05-24 14:53:00,626 - DEBUG -   Timestamp: 1748078580
+2025-05-24 14:53:00,626 - DEBUG -   Signature data: GET1748078580/v2/positions
+2025-05-24 14:53:00,626 - DEBUG -   Generated signature: bf4fd00c87fd51ef1338dc526ad5ca472c0b784faa34c877f8f1fc7e6423731f
+2025-05-24 14:53:00,626 - DEBUG - Request headers: {'api-key': 'itKUkvFVzPpGiq76cBuirH7iRP16g3', 'signature': 'bf4fd00c87fd51ef1338dc526ad5ca472c0b784faa34c877f8f1fc7e6423731f', 'timestamp': '1748078580', 'Content-Type': 'application/json', 'User-Agent': 'python-3.10'}
+2025-05-24 14:53:00,628 - DEBUG - Starting new HTTPS connection (1): api.delta.exchange:443
+2025-05-24 14:53:00,832 - DEBUG - https://api.delta.exchange:443 "GET /v2/positions HTTP/1.1" 401 52
+2025-05-24 14:53:00,832 - INFO - Response status: 401
+2025-05-24 14:53:00,833 - DEBUG - Response headers: {'Content-Type': 'application/json; charset=utf-8', 'Content-Length': '52', 'Connection': 'keep-alive', 'Date': 'Sat, 24 May 2025 09:23:00 GMT', 'Cache-Control': 'max-age=0, private, must-revalidate', 'request-in-time': '1748078580773958', 'request-out-time': '1748078580774773', 'Server': 'Cowboy', 'X-Cache': 'Error from cloudfront', 'Via': '1.1 dcff30a8fb0dd981edbe6cec4a882dcc.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'BLR50-P4', 'X-Amz-Cf-Id': '7001oHXbE7E83eDRTsHbTRYRHb-7I6id8kGwCy1Ewst1QTzQPX0EeA==', 'Vary': 'Origin'}
+2025-05-24 14:53:00,833 - DEBUG - Response content: {"error":{"code":"invalid_api_key"},"success":false}
+2025-05-24 14:53:00,833 - ERROR - Request failed with status 401
+2025-05-24 14:53:00,833 - ERROR - Error response: {"error":{"code":"invalid_api_key"},"success":false}
+2025-05-24 14:53:00,833 - ERROR - Error details: {'code': 'invalid_api_key'}
+2025-05-24 14:53:00,834 - ERROR - Positions test failed
+2025-05-24 14:53:00,834 - INFO - === ORDERS TEST ===
+2025-05-24 14:53:00,834 - INFO - Attempting to fetch orders with state: all...
+2025-05-24 14:53:00,834 - INFO - Making GET request to: https://api.delta.exchange/v2/orders
+2025-05-24 14:53:00,834 - DEBUG - Signature generation:
+2025-05-24 14:53:00,834 - DEBUG -   Method: GET
+2025-05-24 14:53:00,834 - DEBUG -   Endpoint: /v2/orders
+2025-05-24 14:53:00,834 - DEBUG -   Query String: 
+2025-05-24 14:53:00,835 - DEBUG -   Payload: 
+2025-05-24 14:53:00,835 - DEBUG -   Timestamp: 1748078580
+2025-05-24 14:53:00,835 - DEBUG -   Signature data: GET1748078580/v2/orders
+2025-05-24 14:53:00,835 - DEBUG -   Generated signature: 51f5f64246afbd3af9f4db0c21f16bb8709d91a48262725e8d12ec1f809827d8
+2025-05-24 14:53:00,835 - DEBUG - Request headers: {'api-key': 'itKUkvFVzPpGiq76cBuirH7iRP16g3', 'signature': '51f5f64246afbd3af9f4db0c21f16bb8709d91a48262725e8d12ec1f809827d8', 'timestamp': '1748078580', 'Content-Type': 'application/json', 'User-Agent': 'python-3.10'}
+2025-05-24 14:53:00,836 - DEBUG - Starting new HTTPS connection (1): api.delta.exchange:443
+2025-05-24 14:53:01,031 - DEBUG - https://api.delta.exchange:443 "GET /v2/orders HTTP/1.1" 401 52
+2025-05-24 14:53:01,033 - INFO - Response status: 401
+2025-05-24 14:53:01,033 - DEBUG - Response headers: {'Content-Type': 'application/json; charset=utf-8', 'Content-Length': '52', 'Connection': 'keep-alive', 'Date': 'Sat, 24 May 2025 09:23:00 GMT', 'Cache-Control': 'max-age=0, private, must-revalidate', 'request-in-time': '1748078580973598', 'request-out-time': '1748078580974502', 'Server': 'Cowboy', 'X-Cache': 'Error from cloudfront', 'Via': '1.1 f3d62788f3df70f3fa8c3dd61fd3216a.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'BLR50-P4', 'X-Amz-Cf-Id': 'Y7DqJVAdkC0bN2uC9R84vap3jiwug-DJ97jwXlNaTUtGsCsSzPZqwA==', 'Vary': 'Origin'}
+2025-05-24 14:53:01,033 - DEBUG - Response content: {"error":{"code":"invalid_api_key"},"success":false}
+2025-05-24 14:53:01,033 - ERROR - Request failed with status 401
+2025-05-24 14:53:01,033 - ERROR - Error response: {"error":{"code":"invalid_api_key"},"success":false}
+2025-05-24 14:53:01,033 - ERROR - Error details: {'code': 'invalid_api_key'}
+2025-05-24 14:53:01,034 - ERROR - Orders test failed
+2025-05-24 14:53:01,034 - INFO - === ORDER PLACEMENT TEST ===
+2025-05-24 14:53:01,034 - INFO - Attempting to place order:
+2025-05-24 14:53:01,035 - INFO -   Product ID: 139
+2025-05-24 14:53:01,035 - INFO -   Side: buy
+2025-05-24 14:53:01,035 - INFO -   Size: 1
+2025-05-24 14:53:01,035 - INFO -   Price: 54136.75
+2025-05-24 14:53:01,035 - DEBUG - POST/PUT request with data: {'product_id': 139, 'side': 'buy', 'size': '1', 'order_type': 'limit', 'time_in_force': 'gtc', 'limit_price': '54136.75'}
+2025-05-24 14:53:01,035 - INFO - Making POST request to: https://api.delta.exchange/v2/orders
+2025-05-24 14:53:01,035 - DEBUG - Signature generation:
+2025-05-24 14:53:01,035 - DEBUG -   Method: POST
+2025-05-24 14:53:01,035 - DEBUG -   Endpoint: /v2/orders
+2025-05-24 14:53:01,035 - DEBUG -   Query String: 
+2025-05-24 14:53:01,035 - DEBUG -   Payload: {"product_id":139,"side":"buy","size":"1","order_type":"limit","time_in_force":"gtc","limit_price":"54136.75"}
+2025-05-24 14:53:01,035 - DEBUG -   Timestamp: 1748078581
+2025-05-24 14:53:01,035 - DEBUG -   Signature data: POST1748078581/v2/orders{"product_id":139,"side":"buy","size":"1","order_type":"limit","time_in_force":"gtc","limit_price":"54136.75"}
+2025-05-24 14:53:01,035 - DEBUG -   Generated signature: 12b765071f603de914a906ca2a84bb7b920cf7ba53d78fb698c638e7ef82511f
+2025-05-24 14:53:01,035 - DEBUG - Request headers: {'api-key': 'itKUkvFVzPpGiq76cBuirH7iRP16g3', 'signature': '12b765071f603de914a906ca2a84bb7b920cf7ba53d78fb698c638e7ef82511f', 'timestamp': '1748078581', 'Content-Type': 'application/json', 'User-Agent': 'python-3.10'}
+2025-05-24 14:53:01,037 - DEBUG - Starting new HTTPS connection (1): api.delta.exchange:443
+2025-05-24 14:53:01,434 - DEBUG - https://api.delta.exchange:443 "POST /v2/orders HTTP/1.1" 401 52
+2025-05-24 14:53:01,435 - INFO - Response status: 401
+2025-05-24 14:53:01,435 - DEBUG - Response headers: {'Content-Type': 'application/json; charset=utf-8', 'Content-Length': '52', 'Connection': 'keep-alive', 'Date': 'Sat, 24 May 2025 09:23:01 GMT', 'server': 'Cowboy', 'cache-control': 'max-age=0, private, must-revalidate', 'request-in-time': '1748078581400368', 'request-out-time': '1748078581401051', 'X-Cache': 'Error from cloudfront', 'Via': '1.1 00a0f60c17ef48e355a656be0c3da1de.cloudfront.net (CloudFront)', 'X-Amz-Cf-Pop': 'BLR50-P4', 'X-Amz-Cf-Id': 'LlDa2BtKuV9_tGuM4ffoT_Nf3t1MC6WpH4QRpugF2nPPxdJ3tWHTWg==', 'Vary': 'Origin'}
+2025-05-24 14:53:01,435 - DEBUG - Response content: {"error":{"code":"invalid_api_key"},"success":false}
+2025-05-24 14:53:01,435 - ERROR - Request failed with status 401
+2025-05-24 14:53:01,435 - ERROR - Error response: {"error":{"code":"invalid_api_key"},"success":false}
+2025-05-24 14:53:01,435 - ERROR - Error details: {'code': 'invalid_api_key'}
+2025-05-24 14:53:01,435 - ERROR - Order placement failed
+2025-05-24 14:53:01,436 - ERROR - No response received for order placement
+2025-05-24 14:53:01,436 - INFO - === API Test Completed ===

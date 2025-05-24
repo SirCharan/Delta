@@ -1,0 +1,9 @@
+{
+    "globalIgnore": false,
+    "files": {
+        "exclude": {
+            "**/.env": false,
+            "**/.env.*": false
+        }
+    }
+} 
