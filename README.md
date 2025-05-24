@@ -1,10 +1,22 @@
-# Delta Exchange API Test Suite
+# Delta Exchange API Integration Suite
 
-A comprehensive Python test suite for interacting with the Delta Exchange API. This project provides a robust implementation for testing various endpoints of the Delta Exchange platform, including market data, trading, and account management features.
+A comprehensive Python-based integration suite for the Delta Exchange API, providing both testing and production-ready components for interacting with the Delta Exchange platform.
+
+## Project Structure
+
+```
+delta-mcp-server/
+├── delta_api_test.py      # Comprehensive API test suite
+├── delta_official_test.py # Official client test script
+├── server.py             # MCP server implementation
+├── test_server.py        # Server test script
+└── requirements.txt      # Project dependencies
+```
 
 ## Features
 
-- Complete API endpoint testing
+### API Test Suite (`delta_api_test.py`)
+- Complete endpoint testing
 - Secure authentication handling
 - Detailed logging and error reporting
 - Support for both public and private endpoints
@@ -12,22 +24,34 @@ A comprehensive Python test suite for interacting with the Delta Exchange API. T
 - Wallet balance checking
 - Position tracking
 
+### MCP Server (`server.py`)
+- Model-Controller-Provider interface
+- Async request handling
+- Tool-based API access
+- Comprehensive error handling
+- Secure credential management
+
+### Official Client Test (`delta_official_test.py`)
+- India endpoint verification
+- Basic API functionality testing
+- Balance and order management
+
 ## Prerequisites
 
 - Python 3.10 or higher
 - Required Python packages:
   - requests
-  - hmac
-  - hashlib
-  - json
-  - logging
+  - httpx (for async support)
+  - python-dotenv
+  - delta-rest-client
+  - mcp-server
 
 ## Installation
 
 1. Clone the repository:
 ```bash
-git clone <your-repo-url>
-cd delta-exchange-api-test
+git clone https://github.com/SirCharan/Delta.git
+cd Delta
 ```
 
 2. Install dependencies:
@@ -35,27 +59,29 @@ cd delta-exchange-api-test
 pip install -r requirements.txt
 ```
 
-## Configuration
-
-The API credentials are configured in the `DeltaExchangeAPITester` class. Replace the following values with your own:
-
-```python
-self.api_key = "YOUR_API_KEY"
-self.api_secret = "YOUR_API_SECRET"
+3. Set up environment variables (create a `.env` file):
+```env
+DELTA_API_KEY=your_api_key
+DELTA_API_SECRET=your_api_secret
+DELTA_BASE_URL=https://api.india.delta.exchange
 ```
 
 ## Usage
 
-Run the test suite:
-
+### Running the Test Suite
 ```bash
-python delta_api_test.py
+python delta-mcp-server/delta_api_test.py
 ```
 
-The script will:
-1. Test all major API endpoints
-2. Place a test order for ETHUSD
-3. Provide detailed logging of all operations
+### Testing the Server
+```bash
+python delta-mcp-server/test_server.py
+```
+
+### Running the MCP Server
+```bash
+python delta-mcp-server/server.py
+```
 
 ## API Endpoints Tested
 
@@ -67,23 +93,35 @@ The script will:
 - Order Placement (`/v2/orders` POST)
 - Order Cancellation (`/v2/orders/{id}` DELETE)
 
+## Security Features
+
+- API credentials handled securely
+- HMAC-SHA256 request signing
+- HTTPS enforced for all communications
+- Environment variable configuration
+- Secure error handling
+
 ## Logging
 
-The script includes comprehensive logging with the following levels:
+The suite includes comprehensive logging with the following levels:
 - DEBUG: Detailed request/response information
 - INFO: General operation status
 - ERROR: Error conditions and failures
 
-## Security
-
-- API credentials are handled securely
-- All requests are properly signed
-- HTTPS is enforced for all communications
-
 ## Contributing
 
-Feel free to submit issues and enhancement requests!
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details. 
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- Delta Exchange API Documentation
+- Python MCP Server Framework
+- Delta Exchange Python Client 

@@ -1,23 +1,42 @@
-This repository contains a Python-based test suite for the Delta Exchange API. The main file is delta_api_test.py which implements a comprehensive testing framework for various Delta Exchange API endpoints.
+This repository contains a comprehensive Python-based integration suite for the Delta Exchange API. The codebase is structured into several key components:
 
-Key components:
-1. DeltaExchangeAPITester class that handles:
-   - API authentication and request signing
-   - Endpoint testing for products, tickers, wallet balances, positions, and orders
-   - Order placement and management
-   - Detailed logging and error handling
+1. API Test Suite (delta_api_test.py):
+   - Implements a complete testing framework for Delta Exchange API endpoints
+   - Handles API authentication and request signing
+   - Provides detailed logging and error handling
+   - Tests market data, trading, and account management features
 
-The code demonstrates:
-- Secure API key handling
-- HMAC-SHA256 signature generation
+2. MCP Server (server.py):
+   - Implements a Model-Controller-Provider interface for Delta Exchange API
+   - Provides async request handling and tool-based API access
+   - Includes comprehensive error handling and logging
+   - Manages API credentials securely
+
+3. Official Client Test (delta_official_test.py):
+   - Tests connectivity with the India endpoint
+   - Verifies API credentials and basic functionality
+   - Tests balance and order management features
+
+Key Technical Features:
+- HMAC-SHA256 signature generation for API authentication
+- Async HTTP request handling with httpx
+- Environment variable configuration for credentials
+- Comprehensive error handling and logging
+- Type hints and parameter validation
+- Modular and extensible architecture
+
+The codebase demonstrates:
+- Secure API key handling and request signing
 - REST API interaction patterns
 - Error handling and logging best practices
-- Test automation for cryptocurrency exchange APIs
+- Test automation for financial APIs
+- Async programming patterns
+- Tool-based API access patterns
 
-The implementation uses Python 3.10+ and the requests library for HTTP communication. It includes comprehensive logging and follows security best practices for API key management.
-
-This codebase serves as both a practical implementation and a reference for:
+This implementation serves as both a practical tool and a reference for:
 - Cryptocurrency exchange API integration
 - API authentication patterns
 - Test automation for financial APIs
-- Error handling in API clients 
+- Error handling in API clients
+- Async programming in Python
+- MCP server implementation 

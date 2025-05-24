@@ -1,7 +1,14 @@
 #!/usr/bin/env python3
 """
 Delta Exchange MCP Server - Complete Working Version
-Provides tools for interacting with Delta Exchange API
+
+This server provides a Model-Controller-Provider (MCP) interface for interacting with
+the Delta Exchange API. It implements:
+1. Secure API authentication
+2. Market data access
+3. Trading functionality
+4. Error handling and logging
+5. Async request handling
 """
 
 import asyncio
@@ -12,9 +19,9 @@ import hmac
 import time
 import os
 from typing import Any, Sequence
-import httpx
+import httpx  # Async HTTP client
 
-# Correct MCP imports
+# MCP server imports for tool handling
 from mcp.server import Server
 from mcp.server.models import InitializationOptions
 from mcp.server import NotificationOptions
@@ -24,13 +31,21 @@ from mcp.types import (
     CallToolResult,
 )
 
-# Configure logging
+# Configure logging with timestamp and level
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("delta-mcp-server")
 
 class DeltaExchangeAPI:
+    """
+    Delta Exchange API client for handling all API interactions.
+    Implements authentication, request signing, and error handling.
+    """
+    
     def __init__(self):
-        # Get API credentials from environment variables
+        """
+        Initialize the API client with credentials from environment variables.
+        Falls back to default values if environment variables are not set.
+        """
         self.api_key = os.getenv("DELTA_API_KEY", "OIG5ggif59gm7ZHJjquBA7cIZF0At7")
         self.api_secret = os.getenv("DELTA_API_SECRET", "idFFiuukXBfi5SdYne4nHx1mntfbV60YL9UU9SOSmpJwpgErGYgigNDD5XQO")
         self.base_url = os.getenv("DELTA_BASE_URL", "https://api.india.delta.exchange")
@@ -40,16 +55,27 @@ class DeltaExchangeAPI:
         logger.info(f"API Key: {self.api_key[:10]}...{self.api_key[-5:]}")
         
     def _generate_signature(self, method: str, endpoint: str, query_string: str = "", payload: str = "") -> tuple[str, str]:
-        """Generate signature for Delta Exchange API using their exact format"""
+        """
+        Generate HMAC-SHA256 signature for API authentication.
+        
+        Args:
+            method: HTTP method (GET, POST, etc.)
+            endpoint: API endpoint path
+            query_string: URL query parameters
+            payload: Request body for POST/PUT requests
+            
+        Returns:
+            tuple: (signature, timestamp)
+        """
         timestamp = str(int(time.time()))
         
-        # Create the signature data using Delta Exchange format:
+        # Create signature data following Delta Exchange format:
         # method + timestamp + path + query_string + body
         signature_data = method + timestamp + endpoint + query_string + payload
         
         logger.debug(f"Signature data: {signature_data}")
         
-        # Generate HMAC signature
+        # Generate HMAC-SHA256 signature
         signature = hmac.new(
             self.api_secret.encode('utf-8'),
             signature_data.encode('utf-8'),
@@ -59,7 +85,18 @@ class DeltaExchangeAPI:
         return signature, timestamp
     
     async def _make_request(self, method: str, endpoint: str, params: dict = None, data: dict = None) -> dict:
-        """Make authenticated request to Delta Exchange API"""
+        """
+        Make an authenticated request to the Delta Exchange API.
+        
+        Args:
+            method: HTTP method (GET, POST, PUT)
+            endpoint: API endpoint path
+            params: Query parameters for GET requests
+            data: Request body for POST/PUT requests
+            
+        Returns:
+            dict: API response or error information
+        """
         url = f"{self.base_url}{endpoint}"
         
         # Prepare query string and payload
@@ -70,23 +107,23 @@ class DeltaExchangeAPI:
             query_string = "?" + "&".join([f"{k}={v}" for k, v in params.items()])
             url += query_string
         elif method in ["POST", "PUT"] and data:
-            payload = json.dumps(data, separators=(',', ':'))  # No spaces in JSON
+            payload = json.dumps(data, separators=(',', ':'))  # Compact JSON
         
-        # Generate signature
+        # Generate authentication signature
         signature, timestamp = self._generate_signature(method, endpoint, query_string, payload)
         
-        # Prepare headers with required User-Agent
+        # Prepare request headers with required User-Agent
         headers = {
             'api-key': self.api_key,
             'signature': signature,
             'timestamp': timestamp,
             'Content-Type': 'application/json',
-            'User-Agent': 'python-3.10'  # REQUIRED by Delta Exchange API
+            'User-Agent': 'python-3.10'  # Required by Delta Exchange API
         }
         
         logger.info(f"Making {method} request to: {url}")
         
-        # Make request
+        # Make async request
         async with httpx.AsyncClient(timeout=30.0) as client:
             try:
                 if method == "GET":
@@ -100,6 +137,7 @@ class DeltaExchangeAPI:
                 
                 logger.info(f"Response status: {response.status_code}")
                 
+                # Handle error responses
                 if response.status_code >= 400:
                     logger.error(f"Request failed with status {response.status_code}")
                     logger.error(f"Error response: {response.text}")
@@ -123,12 +161,18 @@ class DeltaExchangeAPI:
 # Initialize the API client
 delta_api = DeltaExchangeAPI()
 
-# Create the MCP server
+# Create the MCP server instance
 app = Server("delta-exchange")
 
 @app.list_tools()
 async def handle_list_tools() -> list[Tool]:
-    """List available tools for Delta Exchange API"""
+    """
+    List available tools for Delta Exchange API.
+    Defines the schema and capabilities of each tool.
+    
+    Returns:
+        list[Tool]: List of available API tools
+    """
     return [
         Tool(
             name="get_assets",
@@ -195,10 +239,20 @@ async def handle_list_tools() -> list[Tool]:
 
 @app.call_tool()
 async def handle_call_tool(name: str, arguments: dict | None) -> CallToolResult:
-    """Handle tool calls for Delta Exchange API"""
+    """
+    Handle tool calls for Delta Exchange API.
+    
+    Args:
+        name: Name of the tool to call
+        arguments: Tool-specific arguments
+        
+    Returns:
+        CallToolResult: Result of the tool call
+    """
     
     if name == "get_assets":
         try:
+            # Get list of all assets
             result = await delta_api._make_request("GET", "/v2/assets")
             
             if "error" in result:
@@ -227,6 +281,7 @@ async def handle_call_tool(name: str, arguments: dict | None) -> CallToolResult:
     
     elif name == "get_ticker":
         try:
+            # Get ticker data for a symbol
             symbol = arguments.get("symbol") if arguments else None
             if not symbol:
                 return CallToolResult(
@@ -263,13 +318,14 @@ async def handle_call_tool(name: str, arguments: dict | None) -> CallToolResult:
     
     elif name == "place_order":
         try:
+            # Place a new order
             if not arguments:
                 return CallToolResult(
                     content=[TextContent(type="text", text="Order parameters are required")],
                     isError=True,
                 )
             
-            # Extract parameters
+            # Extract and validate order parameters
             product_id = arguments.get("product_id")
             size = str(arguments.get("size"))  # Convert to string
             side = arguments.get("side")
@@ -297,6 +353,7 @@ async def handle_call_tool(name: str, arguments: dict | None) -> CallToolResult:
             if limit_price:
                 order_data["limit_price"] = str(limit_price)
             
+            # Place the order
             result = await delta_api._make_request("POST", "/v2/orders", data=order_data)
             
             if "error" in result:
@@ -331,6 +388,10 @@ async def handle_call_tool(name: str, arguments: dict | None) -> CallToolResult:
         )
 
 async def main():
+    """
+    Main entry point for the MCP server.
+    Initializes and runs the server with stdio communication.
+    """
     # Import here to avoid issues with event loops
     from mcp.server.stdio import stdio_server
     

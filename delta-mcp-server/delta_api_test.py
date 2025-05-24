@@ -1,38 +1,64 @@
 #!/usr/bin/env python3
 """
 Complete test script for Delta Exchange API - All fixes applied
+
+This script provides a comprehensive test suite for the Delta Exchange API,
+including market data, trading, and account management endpoints.
+It implements proper authentication, error handling, and logging.
 """
 
-import requests
-import json
-import hmac
-import hashlib
-import time
-import logging
-from urllib.parse import urlencode
+# Standard library imports
+import requests  # For making HTTP requests
+import json     # For JSON data handling
+import hmac     # For HMAC signature generation
+import hashlib  # For SHA256 hashing
+import time     # For timestamp generation
+import logging  # For detailed logging
+from urllib.parse import urlencode  # For URL parameter encoding
 
-# Configure logging
+# Configure logging with timestamp, level, and message format
 logging.basicConfig(
-    level=logging.DEBUG,
+    level=logging.DEBUG,  # Set to DEBUG for maximum verbosity
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
 
 class DeltaExchangeAPITester:
+    """
+    Main class for testing Delta Exchange API endpoints.
+    Handles authentication, request signing, and API communication.
+    """
+    
     def __init__(self):
-        # Use your working API credentials and India endpoint
+        """
+        Initialize the API tester with credentials and base URL.
+        Note: In production, these should be loaded from environment variables.
+        """
         self.api_key = "OIG5ggif59gm7ZHJjquBA7cIZF0At7"
         self.api_secret = "idFFiuukXBfi5SdYne4nHx1mntfbV60YL9UU9SOSmpJwpgErGYgigNDD5XQO"
         self.base_url = "https://api.india.delta.exchange"  # India endpoint!
 
     def _generate_signature(self, method, endpoint, query_string="", payload="", skip_detailed_logging=False):
-        """Generate signature for Delta Exchange API using their exact format"""
+        """
+        Generate HMAC-SHA256 signature for API authentication.
+        
+        Args:
+            method (str): HTTP method (GET, POST, etc.)
+            endpoint (str): API endpoint path
+            query_string (str): URL query parameters
+            payload (str): Request body for POST/PUT requests
+            skip_detailed_logging (bool): Whether to skip detailed logging
+            
+        Returns:
+            tuple: (signature, timestamp)
+        """
         timestamp = str(int(time.time()))
             
-        # Create the signature data using Delta Exchange format:
+        # Create signature data following Delta Exchange format:
         # method + timestamp + path + query_string + body
         signature_data = method + timestamp + endpoint + query_string + payload
         
+        # Log signature generation details if not skipped
         if not skip_detailed_logging:
             logger.debug(f"Signature generation:")
             logger.debug(f"  Method: {method}")
@@ -42,7 +68,7 @@ class DeltaExchangeAPITester:
             logger.debug(f"  Timestamp: {timestamp}")
             logger.debug(f"  Signature data: {signature_data}")
             
-        # Generate HMAC signature
+        # Generate HMAC-SHA256 signature
         signature = hmac.new(
             self.api_secret.encode('utf-8'),
             signature_data.encode('utf-8'),
@@ -55,45 +81,58 @@ class DeltaExchangeAPITester:
         return signature, timestamp
 
     def _make_request(self, method, endpoint, params=None, data=None):
-        """Make authenticated request to Delta Exchange API"""
+        """
+        Make an authenticated request to the Delta Exchange API.
+        
+        Args:
+            method (str): HTTP method (GET, POST, PUT)
+            endpoint (str): API endpoint path
+            params (dict): Query parameters for GET requests
+            data (dict): Request body for POST/PUT requests
+            
+        Returns:
+            requests.Response or None: API response or None if request failed
+        """
         url = f"{self.base_url}{endpoint}"
         
-        # Check if this is a large data endpoint to skip detailed logging
+        # Skip detailed logging for large data endpoints
         skip_detailed_logging = endpoint in ["/v2/products", "/v2/tickers"]
         
         # Prepare query string and payload
         query_string = ""
         payload = ""
         
+        # Handle GET request parameters
         if method == "GET" and params:
             query_string = "?" + "&".join([f"{k}={v}" for k, v in params.items()])
             url += query_string
             if not skip_detailed_logging:
                 logger.debug(f"GET request with params: {query_string}")
+        # Handle POST/PUT request data
         elif method in ["POST", "PUT"] and data:
-            payload = json.dumps(data, separators=(',', ':'))  # No spaces in JSON
+            payload = json.dumps(data, separators=(',', ':'))  # Compact JSON
             if not skip_detailed_logging:
                 logger.debug(f"POST/PUT request with data: {data}")
         
         if not skip_detailed_logging:
             logger.info(f"Making {method} request to: {url}")
         
-        # Generate signature using Delta Exchange format
+        # Generate authentication signature
         signature, timestamp = self._generate_signature(method, endpoint, query_string, payload, skip_detailed_logging)
         
-        # Prepare headers
+        # Prepare request headers
         headers = {
             'api-key': self.api_key,
             'signature': signature,
             'timestamp': timestamp,
             'Content-Type': 'application/json',
-            'User-Agent': 'python-3.10'  # REQUIRED by Delta Exchange API
+            'User-Agent': 'python-3.10'  # Required by Delta Exchange API
         }
         
         if not skip_detailed_logging:
             logger.debug(f"Request headers: {dict(headers)}")
         
-        # Make request
+        # Make the HTTP request
         try:
             if method == "GET":
                 response = requests.get(url, headers=headers, timeout=30)
@@ -104,16 +143,17 @@ class DeltaExchangeAPITester:
             else:
                 raise ValueError(f"Unsupported method: {method}")
             
+            # Log response details
             if not skip_detailed_logging:
                 logger.info(f"Response status: {response.status_code}")
                 logger.debug(f"Response headers: {dict(response.headers)}")
                 # Only log response content for non-large endpoints
-                if len(response.text) < 1000:  # Log only if response is small
+                if len(response.text) < 1000:
                     logger.debug(f"Response content: {response.text}")
                 else:
                     logger.debug(f"Response content: [Large response - {len(response.text)} characters]")
             
-            # Log detailed error information
+            # Handle error responses
             if response.status_code >= 400:
                 logger.error(f"Request failed with status {response.status_code}")
                 logger.error(f"Error response: {response.text}")
@@ -142,7 +182,16 @@ class DeltaExchangeAPITester:
             return None
 
     def test_all_endpoints(self):
-        """Test all major Delta Exchange API endpoints"""
+        """
+        Test all major Delta Exchange API endpoints.
+        This method runs through a series of tests for different API functionalities:
+        1. Products endpoint (public)
+        2. Ticker endpoint (public)
+        3. Wallet balances (private)
+        4. Positions (private)
+        5. Orders (private)
+        6. Order placement (trading)
+        """
         logger.info("=== Delta Exchange API Test Started ===")
         logger.info(f"API Key: {self.api_key[:10]}...{self.api_key[-5:]}")
         logger.info(f"API Secret: {self.api_secret[:10]}...{self.api_secret[-5:]}")
@@ -153,17 +202,17 @@ class DeltaExchangeAPITester:
         response = self._make_request("GET", "/v2/products")
         if response and response.status_code == 200:
             try:
-                # First log the raw response to understand its structure
+                # Log raw response for debugging
                 logger.debug(f"Raw response: {response.text}")
                 
-                # Parse the response as JSON
+                # Parse JSON response
                 products_data = response.json()
                 
-                # Log the parsed data structure
+                # Log data structure
                 logger.debug(f"Parsed data type: {type(products_data)}")
                 logger.debug(f"Parsed data: {products_data}")
                 
-                # Check if we have a result field (common in Delta Exchange API)
+                # Extract products list from response
                 if isinstance(products_data, dict) and 'result' in products_data:
                     products_list = products_data['result']
                 else:
@@ -172,7 +221,7 @@ class DeltaExchangeAPITester:
                 logger.info(f"✅ Products API - SUCCESS")
                 logger.info(f"Found {len(products_list)} products")
                 
-                # Find BTCUSDT product
+                # Find BTCUSDT product for later tests
                 btcusdt_product = None
                 for product in products_list:
                     if isinstance(product, dict) and product.get('symbol') == 'BTCUSDT':
@@ -240,9 +289,9 @@ class DeltaExchangeAPITester:
         if btcusdt_product:
             logger.info("\n=== ORDER PLACEMENT TEST ===")
             
-            # Get current price for a reasonable test order
+            # Calculate test order price (50% below market to avoid execution)
             current_price = ticker_data.get('close', 100000)
-            test_price = round(current_price * 0.5, 1)  # 50% below market (won't execute)
+            test_price = round(current_price * 0.5, 1)
             
             logger.info("Attempting to place order:")
             logger.info(f"  Product ID: {btcusdt_product['id']}")
@@ -250,6 +299,7 @@ class DeltaExchangeAPITester:
             logger.info(f"  Size: 1")
             logger.info(f"  Price: {test_price}")
             
+            # Prepare order data
             order_data = {
                 'product_id': btcusdt_product['id'],
                 'side': 'buy',
@@ -259,13 +309,14 @@ class DeltaExchangeAPITester:
                 'limit_price': str(test_price)
             }
             
+            # Place the order
             response = self._make_request("POST", "/v2/orders", data=order_data)
             if response and response.status_code == 200:
                 order_result = response.json()
                 logger.info("✅ Order Placement - SUCCESS!")
                 logger.info(f"Order Result: {json.dumps(order_result, indent=2)}")
                 
-                # Try to cancel the order immediately
+                # Cancel the test order
                 order_id = order_result.get('result', {}).get('id')
                 if order_id:
                     logger.info(f"Attempting to cancel order {order_id}...")
@@ -282,16 +333,20 @@ class DeltaExchangeAPITester:
         logger.info("\n=== API Test Completed ===")
 
     def place_specific_order(self):
-        """Place a specific order with 0.01 quantity of ETHUSD at $1000 limit price"""
+        """
+        Place a specific test order for ETHUSD.
+        This method demonstrates how to place a limit order for ETHUSD at a specific price.
+        """
         logger.info("\n=== PLACING SPECIFIC ORDER ===")
         
-        # First get all products to find ETHUSD
+        # Get all products to find ETHUSD
         response = self._make_request("GET", "/v2/products")
         if not response or response.status_code != 200:
             logger.error("Failed to get products")
             return
             
         try:
+            # Parse products data
             products_data = response.json()
             if isinstance(products_data, dict) and 'result' in products_data:
                 products_list = products_data['result']
@@ -303,7 +358,6 @@ class DeltaExchangeAPITester:
             for product in products_list:
                 if isinstance(product, dict):
                     symbol = product.get('symbol', '')
-                    # Log each product for debugging
                     logger.debug(f"Found product: {symbol}")
                     if symbol == 'ETHUSD':
                         ethusd_product = product
@@ -317,7 +371,7 @@ class DeltaExchangeAPITester:
                         logger.info(f"  - {product.get('symbol', 'Unknown')}")
                 return
                 
-            # Log product details for verification
+            # Log product details
             logger.info(f"Found ETHUSD product:")
             logger.info(f"  ID: {ethusd_product.get('id')}")
             logger.info(f"  Symbol: {ethusd_product.get('symbol')}")
@@ -335,6 +389,7 @@ class DeltaExchangeAPITester:
                 'limit_price': '1000'
             }
             
+            # Log order details
             logger.info("Placing order with parameters:")
             logger.info(f"  Product: ETHUSD")
             logger.info(f"  Side: buy")
@@ -363,10 +418,12 @@ class DeltaExchangeAPITester:
             logger.error(f"Error placing order: {e}")
 
 def main():
-    """Main test function"""
+    """
+    Main entry point for the test suite.
+    Creates an instance of DeltaExchangeAPITester and runs all tests.
+    """
     tester = DeltaExchangeAPITester()
     tester.test_all_endpoints()
-    # Add the specific order placement
     tester.place_specific_order()
 
 if __name__ == "__main__":
