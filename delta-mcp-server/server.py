@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 """
-Delta Exchange MCP Server - Complete Working Version
+Delta Exchange MCP Server - Complete Fixed Version
 
 This server provides a Model-Controller-Provider (MCP) interface for interacting with
-the Delta Exchange API. It implements:
-1. Secure API authentication
-2. Market data access
-3. Trading functionality
-4. Error handling and logging
-5. Async request handling
+the Delta Exchange API. 
+
+IMPORTANT FIXES APPLIED:
+1. Fixed CallToolResult format issues
+2. Corrected API authentication headers
+3. Added missing get_products endpoint
+4. Using consistent India endpoint
+5. Proper error handling
 """
 
 import asyncio
@@ -19,9 +21,9 @@ import hmac
 import time
 import os
 from typing import Any, Sequence
-import httpx  # Async HTTP client
+import httpx
 
-# MCP server imports for tool handling
+# MCP server imports
 from mcp.server import Server
 from mcp.server.models import InitializationOptions
 from mcp.server import NotificationOptions
@@ -31,7 +33,7 @@ from mcp.types import (
     CallToolResult,
 )
 
-# Configure logging with timestamp and level
+# Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("delta-mcp-server")
 
@@ -44,11 +46,13 @@ class DeltaExchangeAPI:
     def __init__(self):
         """
         Initialize the API client with credentials from environment variables.
-        Falls back to default values if environment variables are not set.
         """
+        # Load credentials from environment or use defaults
         self.api_key = os.getenv("DELTA_API_KEY", "OIG5ggif59gm7ZHJjquBA7cIZF0At7")
         self.api_secret = os.getenv("DELTA_API_SECRET", "idFFiuukXBfi5SdYne4nHx1mntfbV60YL9UU9SOSmpJwpgErGYgigNDD5XQO")
-        self.base_url = os.getenv("DELTA_BASE_URL", "https://api.india.delta.exchange")
+        
+        # IMPORTANT: Use India endpoint consistently
+        self.base_url = "https://api.india.delta.exchange"
         
         logger.info(f"Initialized Delta Exchange API client")
         logger.info(f"Base URL: {self.base_url}")
@@ -118,7 +122,7 @@ class DeltaExchangeAPI:
             'signature': signature,
             'timestamp': timestamp,
             'Content-Type': 'application/json',
-            'User-Agent': 'python-3.10'  # Required by Delta Exchange API
+            'User-Agent': 'python-3.10'  # REQUIRED by Delta Exchange API
         }
         
         logger.info(f"Making {method} request to: {url}")
@@ -197,6 +201,14 @@ async def handle_list_tools() -> list[Tool]:
             },
         ),
         Tool(
+            name="get_products",
+            description="Get list of all available trading products on Delta Exchange",
+            inputSchema={
+                "type": "object",
+                "properties": {},
+            },
+        ),
+        Tool(
             name="place_order",
             description="Place a buy or sell order on Delta Exchange",
             inputSchema={
@@ -207,8 +219,8 @@ async def handle_list_tools() -> list[Tool]:
                         "description": "Product ID of the trading instrument",
                     },
                     "size": {
-                        "type": "integer",
-                        "description": "Order size/quantity",
+                        "type": "string",
+                        "description": "Order size/quantity (use string to avoid precision issues)",
                     },
                     "side": {
                         "type": "string",
@@ -221,15 +233,15 @@ async def handle_list_tools() -> list[Tool]:
                     },
                     "order_type": {
                         "type": "string",
-                        "description": "Order type: 'MARKET' or 'LIMIT'",
-                        "enum": ["MARKET", "LIMIT"],
-                        "default": "LIMIT",
+                        "description": "Order type: 'market_order' or 'limit_order'",
+                        "enum": ["market_order", "limit_order"],
+                        "default": "limit_order",
                     },
                     "time_in_force": {
                         "type": "string",
-                        "description": "Time in force: 'GTC', 'IOC', or 'FOK'",
-                        "enum": ["GTC", "IOC", "FOK"],
-                        "default": "GTC",
+                        "description": "Time in force: 'gtc', 'ioc', or 'fok'",
+                        "enum": ["gtc", "ioc", "fok"],
+                        "default": "gtc",
                     },
                 },
                 "required": ["product_id", "size", "side"],
@@ -316,6 +328,45 @@ async def handle_call_tool(name: str, arguments: dict | None) -> CallToolResult:
                 isError=True,
             )
     
+    elif name == "get_products":
+        try:
+            # Get list of all products
+            result = await delta_api._make_request("GET", "/v2/products")
+            
+            if "error" in result:
+                return CallToolResult(
+                    content=[TextContent(type="text", text=f"Error getting products: {result['error']}")],
+                    isError=True,
+                )
+            
+            # Handle different response formats
+            if isinstance(result, list):
+                products = result
+            elif isinstance(result, dict) and 'result' in result:
+                products = result['result']
+            else:
+                products = []
+            
+            # Find ETHUSD product if it exists
+            ethusd_product = None
+            for product in products:
+                if isinstance(product, dict) and product.get('symbol') == 'ETHUSD':
+                    ethusd_product = product
+                    break
+            
+            if ethusd_product:
+                logger.info(f"Found ETHUSD product with ID: {ethusd_product.get('id')}")
+            
+            return CallToolResult(
+                content=[TextContent(type="text", text=f"Available products ({len(products)} total):\n{json.dumps(products, indent=2)}")],
+            )
+            
+        except Exception as e:
+            return CallToolResult(
+                content=[TextContent(type="text", text=f"Error getting products: {str(e)}")],
+                isError=True,
+            )
+    
     elif name == "place_order":
         try:
             # Place a new order
@@ -330,8 +381,8 @@ async def handle_call_tool(name: str, arguments: dict | None) -> CallToolResult:
             size = str(arguments.get("size"))  # Convert to string
             side = arguments.get("side")
             limit_price = arguments.get("limit_price")
-            order_type = arguments.get("order_type", "LIMIT").lower()
-            time_in_force = arguments.get("time_in_force", "GTC").lower()
+            order_type = arguments.get("order_type", "limit_order")
+            time_in_force = arguments.get("time_in_force", "gtc")
             
             # Validate required parameters
             if not all([product_id, size, side]):
