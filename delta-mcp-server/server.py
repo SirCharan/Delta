@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 """
-Delta Exchange MCP Server - WORKING VERSION
+Delta Exchange MCP Server - FIXED VERSION
 
-Fixed issues:
-1. Proper order_type handling (no lowercase conversion)
-2. Correct CallToolResult construction
-3. Better error handling
-4. Added products endpoint
-5. Improved authentication
+Key fixes:
+1. Proper CallToolResult content construction
+2. Updated import for newer MCP version
+3. Fixed TextContent construction
+4. Better error handling format
 """
 
 import asyncio
@@ -59,16 +58,6 @@ class DeltaExchangeAPI:
         ).hexdigest()
         
         return signature, timestamp
-    
-    def _format_response(self, data, success_msg="Operation completed"):
-        """Format API response consistently"""
-        try:
-            if isinstance(data, dict):
-                return f"{success_msg}:\n{json.dumps(data, indent=2)}"
-            else:
-                return f"{success_msg}: {str(data)}"
-        except:
-            return f"{success_msg}: {str(data)}"
     
     async def _make_request(self, method: str, endpoint: str, params: dict = None, data: dict = None) -> dict:
         url = f"{self.base_url}{endpoint}"
@@ -218,6 +207,7 @@ async def handle_call_tool(name: str, arguments: dict | None) -> CallToolResult:
             
             return CallToolResult(
                 content=[TextContent(type="text", text=f"Available assets ({len(assets)} total):\n{json.dumps(assets, indent=2)}")],
+                isError=False
             )
         
         elif name == "get_products":
@@ -240,6 +230,7 @@ async def handle_call_tool(name: str, arguments: dict | None) -> CallToolResult:
             
             return CallToolResult(
                 content=[TextContent(type="text", text=f"Available products ({len(products)} total):\n" + "\n".join(product_list[:50]) + f"\n\n... showing first 50 of {len(products)} products")],
+                isError=False
             )
         
         elif name == "get_ticker":
@@ -262,6 +253,7 @@ async def handle_call_tool(name: str, arguments: dict | None) -> CallToolResult:
             
             return CallToolResult(
                 content=[TextContent(type="text", text=f"Ticker data for {symbol}:\n{json.dumps(ticker_data, indent=2)}")],
+                isError=False
             )
         
         elif name == "place_order":
@@ -275,7 +267,7 @@ async def handle_call_tool(name: str, arguments: dict | None) -> CallToolResult:
             size = str(arguments.get("size"))
             side = arguments.get("side")
             limit_price = arguments.get("limit_price")
-            order_type = arguments.get("order_type", "limit_order")  # Keep exact enum value
+            order_type = arguments.get("order_type", "limit_order")
             time_in_force = arguments.get("time_in_force", "gtc")
             
             if not all([product_id, size, side]):
@@ -286,10 +278,10 @@ async def handle_call_tool(name: str, arguments: dict | None) -> CallToolResult:
             
             # Prepare order data exactly as API expects
             order_data = {
-                "product_id": int(product_id),  # Ensure integer
+                "product_id": int(product_id),
                 "side": str(side),
-                "size": str(size),              # Ensure string
-                "order_type": str(order_type),  # Don't modify enum
+                "size": str(size),
+                "order_type": str(order_type),
                 "time_in_force": str(time_in_force),
             }
             
@@ -301,15 +293,19 @@ async def handle_call_tool(name: str, arguments: dict | None) -> CallToolResult:
             result = await delta_api._make_request("POST", "/v2/orders", data=order_data)
             
             if "error" in result:
+                error_msg = f"Failed to place order: {result['error']}"
+                logger.error(error_msg)
                 return CallToolResult(
-                    content=[TextContent(type="text", text=f"Failed to place order: {result['error']}")],
+                    content=[TextContent(type="text", text=error_msg)],
                     isError=True
                 )
             
             order_result = result.get('result', result) if isinstance(result, dict) else result
+            success_msg = f"✅ Order placed successfully!\n\nOrder Details:\n{json.dumps(order_result, indent=2)}"
             
             return CallToolResult(
-                content=[TextContent(type="text", text=f"Order placed successfully:\n{json.dumps(order_result, indent=2)}")],
+                content=[TextContent(type="text", text=success_msg)],
+                isError=False
             )
         
         else:
@@ -319,9 +315,10 @@ async def handle_call_tool(name: str, arguments: dict | None) -> CallToolResult:
             )
     
     except Exception as e:
-        logger.error(f"Tool execution error: {e}")
+        error_msg = f"Error executing tool '{name}': {str(e)}"
+        logger.error(error_msg)
         return CallToolResult(
-            content=[TextContent(type="text", text=f"Error executing tool: {str(e)}")],
+            content=[TextContent(type="text", text=error_msg)],
             isError=True
         )
 

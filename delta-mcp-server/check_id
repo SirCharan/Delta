@@ -1,0 +1,94 @@
+#!/usr/bin/env python3
+"""
+Find the correct ETHUSD product ID on Delta Exchange
+Run this to verify product ID 3136 is correct
+"""
+
+import requests
+import json
+
+def find_ethusd_products():
+    # Your working API credentials  
+    BASE_URL = "https://api.delta.exchange"  # From your .env file
+    
+    print("🔍 Finding ETHUSD products on Delta Exchange...")
+    print(f"📍 Base URL: {BASE_URL}")
+    print("=" * 60)
+    
+    try:
+        # Get all products (public endpoint, no auth required)
+        response = requests.get(f"{BASE_URL}/v2/products")
+        
+        if response.status_code != 200:
+            print(f"❌ Failed to get products: {response.status_code}")
+            print(f"Response: {response.text}")
+            return
+        
+        products = response.json()
+        print(f"✅ Found {len(products)} total products")
+        
+        # Find ETH-related products
+        eth_products = []
+        for product in products:
+            symbol = product.get('symbol', '').upper()
+            if 'ETH' in symbol and 'USD' in symbol:
+                eth_products.append(product)
+        
+        print(f"\n🎯 Found {len(eth_products)} ETHUSD-related products:")
+        print("=" * 60)
+        
+        for product in eth_products:
+            print(f"📋 ID: {product.get('id')}")
+            print(f"🏷️  Symbol: {product.get('symbol')}")
+            print(f"📊 Type: {product.get('contract_type')}")
+            print(f"📝 Description: {product.get('description', 'N/A')}")
+            print(f"🟢 Status: {product.get('state', 'N/A')}")
+            print(f"💰 Settlement: {product.get('settling_asset', 'N/A')}")
+            print("-" * 40)
+        
+        # Check specifically for product ID 3136
+        product_3136 = None
+        for product in products:
+            if product.get('id') == 3136:
+                product_3136 = product
+                break
+        
+        print(f"\n🎯 Checking Product ID 3136:")
+        print("=" * 60)
+        if product_3136:
+            print(f"✅ FOUND Product ID 3136!")
+            print(f"🏷️  Symbol: {product_3136.get('symbol')}")
+            print(f"📊 Type: {product_3136.get('contract_type')}")
+            print(f"📝 Description: {product_3136.get('description', 'N/A')}")
+            print(f"🟢 Status: {product_3136.get('state', 'N/A')}")
+            print(f"💰 Settlement: {product_3136.get('settling_asset', 'N/A')}")
+            
+            if 'ETH' in product_3136.get('symbol', '').upper():
+                print("🎉 CONFIRMED: Product ID 3136 is an ETH product!")
+            else:
+                print("⚠️  WARNING: Product ID 3136 is NOT an ETH product!")
+                print("🔧 You may want to use a different product ID")
+        else:
+            print(f"❌ Product ID 3136 NOT FOUND!")
+            print("🔧 Available ETH product IDs shown above")
+        
+        # Show the best ETHUSD perpetual option
+        perpetual_eth = None
+        for product in eth_products:
+            if product.get('contract_type') == 'perpetual_futures':
+                perpetual_eth = product
+                break
+        
+        if perpetual_eth:
+            print(f"\n💡 RECOMMENDED ETHUSD Perpetual:")
+            print("=" * 60)
+            print(f"📋 Use Product ID: {perpetual_eth.get('id')}")
+            print(f"🏷️  Symbol: {perpetual_eth.get('symbol')}")
+            print(f"📊 Type: {perpetual_eth.get('contract_type')}")
+            print(f"📝 Description: {perpetual_eth.get('description', 'N/A')}")
+        
+    except Exception as e:
+        print(f"❌ Error: {e}")
+
+if __name__ == "__main__":
+    find_ethusd_products()
