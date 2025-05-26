@@ -9,10 +9,15 @@ import json
 import hmac
 import hashlib
 import time
+import os
+from dotenv import load_dotenv
 
-# API Credentials (same as in your .env file)
-API_KEY = "OIG5ggif59gm7ZHJjquBA7cIZF0At7"
-API_SECRET = "idFFiuukXBfi5SdYne4nHx1mntfbV60YL9UU9SOSmpJwpgErGYgigNDD5XQO"
+# Load environment variables
+load_dotenv()
+
+# API Credentials from environment variables
+API_KEY = os.getenv("DELTA_API_KEY")
+API_SECRET = os.getenv("DELTA_API_SECRET")
 BASE_URL = "https://api.india.delta.exchange"
 
 def generate_signature(method, endpoint, query_string="", payload=""):
