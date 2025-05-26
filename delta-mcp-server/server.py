@@ -46,6 +46,12 @@ class DeltaExchangeAPI:
         timestamp = str(int(time.time()))
         signature_data = method + timestamp + endpoint + query_string + payload
         
+        logger.debug(f"🔏 Signature generation:")
+        logger.debug(f"   Method: {method}")
+        logger.debug(f"   Timestamp: {timestamp}")
+        logger.debug(f"   Endpoint: {endpoint}")
+        logger.debug(f"   Full signature data: {signature_data}")
+        
         signature = hmac.new(
             self.api_secret.encode('utf-8'),
             signature_data.encode('utf-8'),
@@ -53,6 +59,16 @@ class DeltaExchangeAPI:
         ).hexdigest()
         
         return signature, timestamp
+    
+    def _format_response(self, data, success_msg="Operation completed"):
+        """Format API response consistently"""
+        try:
+            if isinstance(data, dict):
+                return f"{success_msg}:\n{json.dumps(data, indent=2)}"
+            else:
+                return f"{success_msg}: {str(data)}"
+        except:
+            return f"{success_msg}: {str(data)}"
     
     async def _make_request(self, method: str, endpoint: str, params: dict = None, data: dict = None) -> dict:
         url = f"{self.base_url}{endpoint}"
@@ -195,7 +211,7 @@ async def handle_call_tool(name: str, arguments: dict | None) -> CallToolResult:
             if "error" in result:
                 return CallToolResult(
                     content=[TextContent(type="text", text=f"Error getting assets: {result['error']}")],
-                    isError=True,
+                    isError=True
                 )
             
             assets = result.get('result', result) if isinstance(result, dict) else result
@@ -210,7 +226,7 @@ async def handle_call_tool(name: str, arguments: dict | None) -> CallToolResult:
             if "error" in result:
                 return CallToolResult(
                     content=[TextContent(type="text", text=f"Error getting products: {result['error']}")],
-                    isError=True,
+                    isError=True
                 )
             
             products = result.get('result', result) if isinstance(result, dict) else result
@@ -231,7 +247,7 @@ async def handle_call_tool(name: str, arguments: dict | None) -> CallToolResult:
             if not symbol:
                 return CallToolResult(
                     content=[TextContent(type="text", text="Symbol is required")],
-                    isError=True,
+                    isError=True
                 )
             
             result = await delta_api._make_request("GET", f"/v2/tickers/{symbol}")
@@ -239,7 +255,7 @@ async def handle_call_tool(name: str, arguments: dict | None) -> CallToolResult:
             if "error" in result:
                 return CallToolResult(
                     content=[TextContent(type="text", text=f"Error getting ticker: {result['error']}")],
-                    isError=True,
+                    isError=True
                 )
             
             ticker_data = result.get('result', result) if isinstance(result, dict) else result
@@ -252,7 +268,7 @@ async def handle_call_tool(name: str, arguments: dict | None) -> CallToolResult:
             if not arguments:
                 return CallToolResult(
                     content=[TextContent(type="text", text="Order parameters are required")],
-                    isError=True,
+                    isError=True
                 )
             
             product_id = arguments.get("product_id")
@@ -265,16 +281,16 @@ async def handle_call_tool(name: str, arguments: dict | None) -> CallToolResult:
             if not all([product_id, size, side]):
                 return CallToolResult(
                     content=[TextContent(type="text", text="product_id, size, and side are required")],
-                    isError=True,
+                    isError=True
                 )
             
             # Prepare order data exactly as API expects
             order_data = {
-                "product_id": product_id,
-                "side": side,
-                "size": size,
-                "order_type": order_type,  # Don't modify this
-                "time_in_force": time_in_force,
+                "product_id": int(product_id),  # Ensure integer
+                "side": str(side),
+                "size": str(size),              # Ensure string
+                "order_type": str(order_type),  # Don't modify enum
+                "time_in_force": str(time_in_force),
             }
             
             if limit_price:
@@ -287,7 +303,7 @@ async def handle_call_tool(name: str, arguments: dict | None) -> CallToolResult:
             if "error" in result:
                 return CallToolResult(
                     content=[TextContent(type="text", text=f"Failed to place order: {result['error']}")],
-                    isError=True,
+                    isError=True
                 )
             
             order_result = result.get('result', result) if isinstance(result, dict) else result
@@ -299,14 +315,14 @@ async def handle_call_tool(name: str, arguments: dict | None) -> CallToolResult:
         else:
             return CallToolResult(
                 content=[TextContent(type="text", text=f"Unknown tool: {name}")],
-                isError=True,
+                isError=True
             )
     
     except Exception as e:
         logger.error(f"Tool execution error: {e}")
         return CallToolResult(
             content=[TextContent(type="text", text=f"Error executing tool: {str(e)}")],
-            isError=True,
+            isError=True
         )
 
 async def main():
